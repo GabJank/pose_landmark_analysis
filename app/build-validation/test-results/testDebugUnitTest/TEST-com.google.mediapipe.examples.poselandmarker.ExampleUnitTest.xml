@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.google.mediapipe.examples.poselandmarker.ExampleUnitTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-08-27T18:15:09.541Z" hostname="DESKTOP-8PVEK57" time="0.0">
+<testsuite name="com.google.mediapipe.examples.poselandmarker.ExampleUnitTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-02T23:02:07.002Z" hostname="GABRIEL" time="0.0">
   <properties/>
   <testcase name="addition_isCorrect" classname="com.google.mediapipe.examples.poselandmarker.ExampleUnitTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>

@@ -1,3 +1,9 @@
+## Avaliação ergonômica
+
+Na galeria, selecione fotos frontal e lateral da mesma postura. O aplicativo apresenta estimativas de RULA e REBA; informe carga, atividade, apoio e pega e confirme os ajustes posturais. Os ângulos e ajustes dependem da visibilidade e do enquadramento, e a estimativa REBA é simplificada: não cobre todos os modificadores nem substitui a aplicação integral do método. Revise os resultados com profissional habilitado.
+
+Para OWAS, selecione **Avaliar OWAS** e informe costas, braços, pernas e carga ou força observados. A categoria corresponde a uma única observação. Uma análise da tarefa exige amostragem ao longo do ciclo e consideração das frequências das posturas. A tabela de categorias segue a [Universitat Politècnica de València](https://www.ergonautas.upv.es/metodos/owas/owas-ayuda.php).
+
 # MediaPipe Tasks Pose Landmark Detection Android Demo
 
 ### Overview

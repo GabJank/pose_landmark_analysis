@@ -16,6 +16,10 @@
 package com.google.mediapipe.examples.poselandmarker.fragment
 
 import android.Manifest
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
+import androidx.core.text.scale
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -46,6 +50,7 @@ import com.google.mediapipe.examples.poselandmarker.ErgonomicAssessment
 import com.google.mediapipe.examples.poselandmarker.ErgonomicInputs
 import com.google.mediapipe.examples.poselandmarker.displayText
 import com.google.mediapipe.examples.poselandmarker.RulaAdjustments
+import com.google.mediapipe.examples.poselandmarker.OwasDialog
 import com.google.mediapipe.examples.poselandmarker.RulaAdjustmentsDialog
 import com.google.mediapipe.examples.poselandmarker.RulaTwoViewSession
 import com.google.mediapipe.examples.poselandmarker.PoseLandmarkerHelper
@@ -72,6 +77,7 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private var _fragmentGalleryBinding: FragmentGalleryBinding? = null
+    private var showAssessmentDetails = false
     private var rulaAdjustments = RulaAdjustments()
     private var latestAngles: com.google.mediapipe.examples.poselandmarker.PoseAngles? = null
     private var rulaSession = RulaTwoViewSession()
@@ -161,6 +167,11 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
                 }
             }
         }
+        fragmentGalleryBinding.bottomSheetLayout.owasButton.setOnClickListener {
+            OwasDialog.show(requireContext(), latestAngles) { result ->
+                fragmentGalleryBinding.bottomSheetLayout.owasResultLabel.text = result
+            }
+        }
         fragmentGalleryBinding.bottomSheetLayout.rulaAdjustmentsButton.setOnClickListener {
             RulaAdjustmentsDialog.show(requireContext(), rulaAdjustments) {
                 rulaAdjustments = it
@@ -189,19 +200,31 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             showPhotoSourceChooser()
         }
 
+        val sheet = fragmentGalleryBinding.bottomSheetLayout
+        val behavior = BottomSheetBehavior.from(sheet.root)
+        sheet.sheetToggleButton.setOnClickListener {
+            behavior.state = if (behavior.state == BottomSheetBehavior.STATE_EXPANDED)
+                BottomSheetBehavior.STATE_COLLAPSED else BottomSheetBehavior.STATE_EXPANDED
+        }
+        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                sheet.sheetToggleButton.text = if (newState == BottomSheetBehavior.STATE_EXPANDED)
+                    "Voltar às fotos" else "Dados e resultados"
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
+        })
+        sheet.detailsButton.setOnClickListener {
+            showAssessmentDetails = !showAssessmentDetails
+            refreshErgonomicLabel()
+        }
         initBottomSheetControls()
+        updatePhotoControls()
+        refreshErgonomicLabel()
     }
 
     private fun selectView(view: RulaView) {
         pendingRulaView = view
-        fragmentGalleryBinding.selectFrontalButton.alpha =
-            if (view == RulaView.FRONTAL) 1f else 0.65f
-        fragmentGalleryBinding.selectLateralButton.alpha =
-            if (view == RulaView.LATERAL) 1f else 0.65f
-        fragmentGalleryBinding.addOrReplacePhotoButton.text =
-            if (view == RulaView.FRONTAL)
-                "Adicionar/substituir foto frontal"
-            else "Adicionar/substituir foto lateral"
+        updatePhotoControls()
 
         val snapshot = if (view == RulaView.FRONTAL) frontalSnapshot else lateralSnapshot
         if (snapshot == null) {
@@ -209,6 +232,22 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         } else {
             showSnapshot(snapshot)
         }
+    }
+
+    private fun updatePhotoControls() {
+        val frontal = pendingRulaView == RulaView.FRONTAL
+        val snapshot = if (frontal) frontalSnapshot else lateralSnapshot
+        fragmentGalleryBinding.selectFrontalButton.isChecked = frontal
+        fragmentGalleryBinding.selectLateralButton.isChecked = !frontal
+        fragmentGalleryBinding.selectFrontalButton.text =
+            if (rulaSession.frontal != null) "Frontal ✓" else "Frontal"
+        fragmentGalleryBinding.selectLateralButton.text =
+            if (rulaSession.lateral != null) "Lateral ✓" else "Lateral"
+        val count = listOfNotNull(rulaSession.frontal, rulaSession.lateral).size
+        fragmentGalleryBinding.photoCountLabel.text = "FOTOS DA POSTURA  ·  $count de 2"
+        val action = if (snapshot == null) "Adicionar" else "Trocar"
+        val view = if (frontal) "frontal" else "lateral"
+        fragmentGalleryBinding.addOrReplacePhotoButton.text = "$action foto $view"
     }
 
     private fun showSnapshot(snapshot: ViewSnapshot) {
@@ -591,10 +630,11 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             clearPendingViewResult()
         }
 
-        fragmentGalleryBinding.bottomSheetLayout.ergonomicResultLabel.text = latestAngles?.let {
-            val ergonomic = ErgonomicAssessment.calculate(it, ergonomicInputs())
-            "Sessão frontal + lateral completa\n${ergonomic.displayText()}"
-        } ?: twoViewStatus(angles != null)
+        updatePhotoControls()
+        if (latestAngles == null) {
+            fragmentGalleryBinding.bottomSheetLayout.ergonomicResultLabel.text = twoViewStatus(angles != null)
+        }
+        refreshErgonomicLabel()
 
         fragmentGalleryBinding.bottomSheetLayout.leftShoulderLabel.text =
             latestAngles?.takeIf { it.leftArmDetected }?.let {
@@ -615,13 +655,13 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private fun twoViewStatus(lastPhotoWasValid: Boolean): String {
-        if (!lastPhotoWasValid) return "RULA: postura não detectada nessa foto"
+        if (!lastPhotoWasValid) return "Nenhuma postura detectada. Tente outra foto com o corpo visível."
         val missing = when {
             rulaSession.frontal == null -> "frontal"
             rulaSession.lateral == null -> "lateral"
-            else -> return "RULA: combinando as duas vistas"
+            else -> return "Combinando as duas fotos…"
         }
-        return "RULA: foto salva; selecione também a foto $missing"
+        return "Foto salva. Adicione também a foto $missing para ver RULA e REBA."
     }
 
     private fun clearPendingViewResult() {
@@ -635,6 +675,8 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             fragmentGalleryBinding.selectLateralButton.text = "Lateral"
         }
         latestAngles = rulaSession.combinedAngles()
+        updatePhotoControls()
+        refreshErgonomicLabel()
         fragmentGalleryBinding.overlay.clear()
     }
 
@@ -648,10 +690,28 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     )
 
     private fun refreshErgonomicLabel() {
-        latestAngles?.let {
-            fragmentGalleryBinding.bottomSheetLayout.ergonomicResultLabel.text =
-                ErgonomicAssessment.calculate(it, ergonomicInputs()).displayText()
+        val sheet = fragmentGalleryBinding.bottomSheetLayout
+        val angles = latestAngles
+        sheet.resultsSummary.visibility = if (angles == null) View.GONE else View.VISIBLE
+        sheet.detailsButton.visibility = if (angles == null) View.GONE else View.VISIBLE
+        sheet.ergonomicResultLabel.visibility =
+            if (angles == null || showAssessmentDetails) View.VISIBLE else View.GONE
+        sheet.detailsButton.text = if (showAssessmentDetails) "Ocultar detalhes" else "Ver detalhes da avaliação"
+        if (angles == null) return
+        val result = ErgonomicAssessment.calculate(angles, ergonomicInputs())
+        val score = result.rula.worst.final
+        sheet.rulaSummary.text = buildSpannedString {
+            bold { append("RULA\n") }
+            scale(1.5f) { bold { append("${score.score}/7  ·  ${score.risk}\n") } }
+            append("${score.action}\n")
+            append("Esquerdo: ${result.rula.left?.final?.score ?: "não avaliado"}  ·  Direito: ${result.rula.right?.final?.score ?: "não avaliado"}")
         }
+        sheet.rebaSummary.text = buildSpannedString {
+            bold { append("REBA simplificado\n") }
+            scale(1.5f) { bold { append("${result.reba.score}/15  ·  ${result.reba.risk}\n") } }
+            append("${result.reba.action}\nRequer avaliação completa do método.")
+        }
+        sheet.ergonomicResultLabel.text = result.displayText()
     }
 
     private fun updateDisplayView(mediaType: MediaType) {

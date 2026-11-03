@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-08-27T18:15:09.493Z" hostname="DESKTOP-8PVEK57" time="0.045">
+<testsuite name="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-02T23:02:06.963Z" hostname="GABRIEL" time="0.036">
   <properties/>
-  <testcase name="confirmedModifiersAreAddedToPostureScores" classname="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" time="0.013"/>
+  <testcase name="confirmedModifiersAreAddedToPostureScores" classname="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" time="0.032"/>
   <testcase name="evaluatesEachArmIndependently" classname="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" time="0.0"/>
-  <testcase name="scoresAlwaysStayInsideMethodRanges" classname="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" time="0.031"/>
+  <testcase name="scoresAlwaysStayInsideMethodRanges" classname="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" time="0.001"/>
   <testcase name="addedExposureDoesNotReduceScores" classname="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" time="0.0"/>
   <testcase name="neutralPostureUsesFirstCellsOfOfficialTables" classname="com.google.mediapipe.examples.poselandmarker.ErgonomicAssessmentTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>

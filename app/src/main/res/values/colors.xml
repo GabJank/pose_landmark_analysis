@@ -15,17 +15,22 @@
     ~ limitations under the License.
 -->
 <resources>
-    <color name="mp_color_primary">#007F8B</color>
-    <color name="mp_color_primary_variant">#12B5CB</color>
-    <color name="mp_color_primary_dark">#00676D</color>
-    <color name="mp_color_secondary">#FBBC04</color>
-    <color name="mp_color_secondary_variant">#F9AB00</color>
+    <color name="mp_color_primary">#137A72</color>
+    <color name="mp_color_primary_variant">#3D9D90</color>
+    <color name="mp_color_primary_dark">#0C5752</color>
+    <color name="mp_color_secondary">#137A72</color>
+    <color name="mp_color_secondary_variant">#0C5752</color>
     <color name="mp_color_error">#B00020</color>
-    <color name="toolbar_background">#E0E0E0</color>
+    <color name="toolbar_background">#F5F8F7</color>
     <color name="ic_launcher_background">#FFFFFF</color>
     <color name="bottom_sheet_background">#EEEEEE</color>
     <color name="bottom_sheet_text_color">@android:color/black</color>
     <color name="icActive">#FFFFFFFF</color>
     <color name="icFocused">#DDFFFFFF</color>
     <color name="icPressed">#AAFFFFFF</color>
+    <color name="ui_background">#F5F8F7</color>
+    <color name="ui_ink">#183B3A</color>
+    <color name="ui_muted">#58716E</color>
+    <color name="ui_mint">#E3F0EC</color>
+    <color name="ui_border">#DCE7E3</color>
 </resources>

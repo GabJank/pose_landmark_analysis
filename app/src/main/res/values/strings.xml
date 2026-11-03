@@ -31,7 +31,7 @@
         threshold of pose detect results button</string>
     <string name="menu_camera">Camera</string>
     <string name="menu_gallery">Gallery</string>
-    <string name="tv_gallery_placeholder">Selecione uma foto frontal e uma foto lateral para iniciar a avaliação RULA.</string>
+    <string name="tv_gallery_placeholder">Enquadre o corpo inteiro e selecione as fotos abaixo para iniciar.</string>
 
     <string name="label_inference_time">Inference Time</string>
     <string name="label_fps">Frames per Second</string>

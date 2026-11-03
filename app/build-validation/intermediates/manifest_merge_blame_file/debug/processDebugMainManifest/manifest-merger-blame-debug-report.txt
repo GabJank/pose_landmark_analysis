@@ -25,149 +25,166 @@
 25
 26    <!-- Declare features -->
 27    <uses-feature android:name="android.hardware.camera" />
-27-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:21:5-60
-27-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:21:19-57
+27-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:21:5-60
+27-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:21:19-57
 28
 29    <!-- Declare permissions -->
 30    <uses-permission android:name="android.permission.CAMERA" />
-30-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:24:5-65
-30-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:24:22-62
+30-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:24:5-65
+30-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:24:22-62
 31
 32    <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
 33    <!-- <uses-sdk android:minSdkVersion="14"/> -->
 34    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-34-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:25:5-79
-34-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:25:22-76
+34-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:25:5-79
+34-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:25:22-76
 35    <uses-permission android:name="android.permission.INTERNET" />
-35-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:26:5-67
-35-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:26:22-64
+35-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:26:5-67
+35-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:26:22-64
 36
 37    <application
-37-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:26:5-50:19
+37-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:26:5-60:19
 38        android:allowBackup="true"
-38-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:27:9-35
+38-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:27:9-35
 39        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-39-->[androidx.core:core:1.8.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\27c9cd9233f30583a113e96718a72ac7\transformed\core-1.8.0\AndroidManifest.xml:24:18-86
+39-->[androidx.core:core:1.8.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\f6879a95054b409dc236bf5045732ef7\transformed\core-1.8.0\AndroidManifest.xml:24:18-86
 40        android:debuggable="true"
 41        android:extractNativeLibs="false"
 42        android:icon="@mipmap/ic_launcher"
-42-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:28:9-43
+42-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:28:9-43
 43        android:label="@string/app_name"
-43-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:29:9-41
+43-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:29:9-41
 44        android:roundIcon="@mipmap/ic_launcher_round"
-44-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:30:9-54
+44-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:30:9-54
 45        android:supportsRtl="true"
-45-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:31:9-35
+45-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:31:9-35
 46        android:taskAffinity=""
-46-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:32:9-32
+46-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:32:9-32
 47        android:theme="@style/AppTheme" >
-47-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:33:9-40
+47-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:33:9-40
 48        <activity
-48-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:36:9-49:20
+48-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:36:9-49:20
 49            android:name="com.google.mediapipe.examples.poselandmarker.MainActivity"
-49-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:37:13-41
+49-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:37:13-41
 50            android:exported="true" >
-50-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:38:13-36
+50-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:38:13-36
 51            <intent-filter>
-51-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:39:13-43:29
+51-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:39:13-43:29
 52                <action android:name="android.intent.action.MAIN" />
-52-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:40:17-69
-52-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:40:25-66
+52-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:40:17-69
+52-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:40:25-66
 53
 54                <category android:name="android.intent.category.LAUNCHER" />
-54-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:42:17-77
-54-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:42:27-74
+54-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:42:17-77
+54-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:42:27-74
 55            </intent-filter>
 56
 57            <!-- Declare notch support -->
 58            <meta-data
-58-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:46:13-48:40
+58-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:46:13-48:40
 59                android:name="android.notch_support"
-59-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:47:17-53
+59-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:47:17-53
 60                android:value="true" />
-60-->C:\Users\Admin\Downloads\mediapipe-samples-main\mediapipe-samples-main\examples\pose_landmarker\android\app\src\main\AndroidManifest.xml:48:17-37
+60-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:48:17-37
 61        </activity>
 62
-63        <service
-63-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.3\transforms\392dfabe0d339bcdf2960c5e274e1aad\transformed\camera-camera2-1.4.2\AndroidManifest.xml:24:9-33:19
-64            android:name="androidx.camera.core.impl.MetadataHolderService"
-64-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.3\transforms\392dfabe0d339bcdf2960c5e274e1aad\transformed\camera-camera2-1.4.2\AndroidManifest.xml:25:13-75
-65            android:enabled="false"
-65-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.3\transforms\392dfabe0d339bcdf2960c5e274e1aad\transformed\camera-camera2-1.4.2\AndroidManifest.xml:26:13-36
-66            android:exported="false" >
-66-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.3\transforms\392dfabe0d339bcdf2960c5e274e1aad\transformed\camera-camera2-1.4.2\AndroidManifest.xml:27:13-37
-67            <meta-data
-67-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.3\transforms\392dfabe0d339bcdf2960c5e274e1aad\transformed\camera-camera2-1.4.2\AndroidManifest.xml:30:13-32:89
-68                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
-68-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.3\transforms\392dfabe0d339bcdf2960c5e274e1aad\transformed\camera-camera2-1.4.2\AndroidManifest.xml:31:17-103
-69                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
-69-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.3\transforms\392dfabe0d339bcdf2960c5e274e1aad\transformed\camera-camera2-1.4.2\AndroidManifest.xml:32:17-86
-70        </service>
-71
-72        <uses-library
-72-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.3\transforms\1ed73016361222203f6ea03d3044d6c0\transformed\window-1.1.0-alpha03\AndroidManifest.xml:23:9-25:40
-73            android:name="androidx.window.extensions"
-73-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.3\transforms\1ed73016361222203f6ea03d3044d6c0\transformed\window-1.1.0-alpha03\AndroidManifest.xml:24:13-54
-74            android:required="false" />
-74-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.3\transforms\1ed73016361222203f6ea03d3044d6c0\transformed\window-1.1.0-alpha03\AndroidManifest.xml:25:13-37
-75        <uses-library
-75-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.3\transforms\1ed73016361222203f6ea03d3044d6c0\transformed\window-1.1.0-alpha03\AndroidManifest.xml:26:9-28:40
-76            android:name="androidx.window.sidecar"
-76-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.3\transforms\1ed73016361222203f6ea03d3044d6c0\transformed\window-1.1.0-alpha03\AndroidManifest.xml:27:13-51
-77            android:required="false" />
-77-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.3\transforms\1ed73016361222203f6ea03d3044d6c0\transformed\window-1.1.0-alpha03\AndroidManifest.xml:28:13-37
-78
-79        <provider
-79-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\c0739e5719a25cc26c57182465e12e18\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
-80            android:name="androidx.startup.InitializationProvider"
-80-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\c0739e5719a25cc26c57182465e12e18\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
-81            android:authorities="com.google.mediapipe.examples.poselandmarker.androidx-startup"
-81-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\c0739e5719a25cc26c57182465e12e18\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
-82            android:exported="false" >
-82-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\c0739e5719a25cc26c57182465e12e18\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
-83            <meta-data
-83-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\c0739e5719a25cc26c57182465e12e18\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
-84                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-84-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\c0739e5719a25cc26c57182465e12e18\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
-85                android:value="androidx.startup" />
-85-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\c0739e5719a25cc26c57182465e12e18\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
-86            <meta-data
-86-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Admin\.gradle\caches\8.14.3\transforms\d00bf6fa66804175150324cc24ec3a6b\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
-87                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-87-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Admin\.gradle\caches\8.14.3\transforms\d00bf6fa66804175150324cc24ec3a6b\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
-88                android:value="androidx.startup" />
-88-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Admin\.gradle\caches\8.14.3\transforms\d00bf6fa66804175150324cc24ec3a6b\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
-89        </provider>
-90
-91        <service
-91-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:29:9-35:19
-92            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
-92-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:30:13-103
-93            android:exported="false" >
-93-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:31:13-37
-94            <meta-data
-94-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:32:13-34:39
-95                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
-95-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:33:17-94
-96                android:value="cct" />
-96-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\e209d86676246f3787e20a4d8fcdf305\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:34:17-36
-97        </service>
-98        <service
-98-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\5ceb50ffc48feb78d6ab4cbb3cc50008\transformed\transport-runtime-3.1.0\AndroidManifest.xml:26:9-30:19
-99            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
-99-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\5ceb50ffc48feb78d6ab4cbb3cc50008\transformed\transport-runtime-3.1.0\AndroidManifest.xml:27:13-117
-100            android:exported="false"
-100-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\5ceb50ffc48feb78d6ab4cbb3cc50008\transformed\transport-runtime-3.1.0\AndroidManifest.xml:28:13-37
-101            android:permission="android.permission.BIND_JOB_SERVICE" >
-101-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\5ceb50ffc48feb78d6ab4cbb3cc50008\transformed\transport-runtime-3.1.0\AndroidManifest.xml:29:13-69
-102        </service>
-103
-104        <receiver
-104-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\5ceb50ffc48feb78d6ab4cbb3cc50008\transformed\transport-runtime-3.1.0\AndroidManifest.xml:32:9-34:40
-105            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
-105-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\5ceb50ffc48feb78d6ab4cbb3cc50008\transformed\transport-runtime-3.1.0\AndroidManifest.xml:33:13-132
-106            android:exported="false" />
-106-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.3\transforms\5ceb50ffc48feb78d6ab4cbb3cc50008\transformed\transport-runtime-3.1.0\AndroidManifest.xml:34:13-37
-107    </application>
-108
-109</manifest>
+63        <provider
+64            android:name="androidx.core.content.FileProvider"
+64-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:52:13-62
+65            android:authorities="com.google.mediapipe.examples.poselandmarker.fileprovider"
+65-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:53:13-64
+66            android:exported="false"
+66-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:54:13-37
+67            android:grantUriPermissions="true" >
+67-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:55:13-47
+68            <meta-data
+68-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:56:13-58:54
+69                android:name="android.support.FILE_PROVIDER_PATHS"
+69-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:57:17-67
+70                android:resource="@xml/file_paths" />
+70-->D:\pose_landmark_analysis\app\src\main\AndroidManifest.xml:58:17-51
+71        </provider>
+72
+73        <service
+73-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.6\transforms\2568f04596882e2774e30924b8362e85\transformed\camera-camera2-1.4.2\AndroidManifest.xml:24:9-33:19
+74            android:name="androidx.camera.core.impl.MetadataHolderService"
+74-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.6\transforms\2568f04596882e2774e30924b8362e85\transformed\camera-camera2-1.4.2\AndroidManifest.xml:25:13-75
+75            android:enabled="false"
+75-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.6\transforms\2568f04596882e2774e30924b8362e85\transformed\camera-camera2-1.4.2\AndroidManifest.xml:26:13-36
+76            android:exported="false" >
+76-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.6\transforms\2568f04596882e2774e30924b8362e85\transformed\camera-camera2-1.4.2\AndroidManifest.xml:27:13-37
+77            <meta-data
+77-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.6\transforms\2568f04596882e2774e30924b8362e85\transformed\camera-camera2-1.4.2\AndroidManifest.xml:30:13-32:89
+78                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
+78-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.6\transforms\2568f04596882e2774e30924b8362e85\transformed\camera-camera2-1.4.2\AndroidManifest.xml:31:17-103
+79                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
+79-->[androidx.camera:camera-camera2:1.4.2] C:\Users\Admin\.gradle\caches\8.14.6\transforms\2568f04596882e2774e30924b8362e85\transformed\camera-camera2-1.4.2\AndroidManifest.xml:32:17-86
+80        </service>
+81
+82        <uses-library
+82-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.6\transforms\fd568944e21ed0bf27f85756407702d3\transformed\window-1.1.0-alpha03\AndroidManifest.xml:23:9-25:40
+83            android:name="androidx.window.extensions"
+83-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.6\transforms\fd568944e21ed0bf27f85756407702d3\transformed\window-1.1.0-alpha03\AndroidManifest.xml:24:13-54
+84            android:required="false" />
+84-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.6\transforms\fd568944e21ed0bf27f85756407702d3\transformed\window-1.1.0-alpha03\AndroidManifest.xml:25:13-37
+85        <uses-library
+85-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.6\transforms\fd568944e21ed0bf27f85756407702d3\transformed\window-1.1.0-alpha03\AndroidManifest.xml:26:9-28:40
+86            android:name="androidx.window.sidecar"
+86-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.6\transforms\fd568944e21ed0bf27f85756407702d3\transformed\window-1.1.0-alpha03\AndroidManifest.xml:27:13-51
+87            android:required="false" />
+87-->[androidx.window:window:1.1.0-alpha03] C:\Users\Admin\.gradle\caches\8.14.6\transforms\fd568944e21ed0bf27f85756407702d3\transformed\window-1.1.0-alpha03\AndroidManifest.xml:28:13-37
+88
+89        <provider
+89-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\5abbd1991a2aa68e2d2214f8a10c3a7a\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+90            android:name="androidx.startup.InitializationProvider"
+90-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\5abbd1991a2aa68e2d2214f8a10c3a7a\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
+91            android:authorities="com.google.mediapipe.examples.poselandmarker.androidx-startup"
+91-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\5abbd1991a2aa68e2d2214f8a10c3a7a\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
+92            android:exported="false" >
+92-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\5abbd1991a2aa68e2d2214f8a10c3a7a\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
+93            <meta-data
+93-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\5abbd1991a2aa68e2d2214f8a10c3a7a\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+94                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+94-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\5abbd1991a2aa68e2d2214f8a10c3a7a\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
+95                android:value="androidx.startup" />
+95-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\5abbd1991a2aa68e2d2214f8a10c3a7a\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
+96            <meta-data
+96-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Admin\.gradle\caches\8.14.6\transforms\afe14ac1684e93c71040153fb4834d96\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+97                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+97-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Admin\.gradle\caches\8.14.6\transforms\afe14ac1684e93c71040153fb4834d96\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+98                android:value="androidx.startup" />
+98-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Admin\.gradle\caches\8.14.6\transforms\afe14ac1684e93c71040153fb4834d96\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+99        </provider>
+100
+101        <service
+101-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:29:9-35:19
+102            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+102-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:30:13-103
+103            android:exported="false" >
+103-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:31:13-37
+104            <meta-data
+104-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:32:13-34:39
+105                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+105-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:33:17-94
+106                android:value="cct" />
+106-->[com.google.android.datatransport:transport-backend-cct:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\3cea60a1c1ca2325e1ddb02570da8329\transformed\transport-backend-cct-3.1.0\AndroidManifest.xml:34:17-36
+107        </service>
+108        <service
+108-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\e51213b8df98bcbb0e672ee767e6a925\transformed\transport-runtime-3.1.0\AndroidManifest.xml:26:9-30:19
+109            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+109-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\e51213b8df98bcbb0e672ee767e6a925\transformed\transport-runtime-3.1.0\AndroidManifest.xml:27:13-117
+110            android:exported="false"
+110-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\e51213b8df98bcbb0e672ee767e6a925\transformed\transport-runtime-3.1.0\AndroidManifest.xml:28:13-37
+111            android:permission="android.permission.BIND_JOB_SERVICE" >
+111-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\e51213b8df98bcbb0e672ee767e6a925\transformed\transport-runtime-3.1.0\AndroidManifest.xml:29:13-69
+112        </service>
+113
+114        <receiver
+114-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\e51213b8df98bcbb0e672ee767e6a925\transformed\transport-runtime-3.1.0\AndroidManifest.xml:32:9-34:40
+115            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+115-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\e51213b8df98bcbb0e672ee767e6a925\transformed\transport-runtime-3.1.0\AndroidManifest.xml:33:13-132
+116            android:exported="false" />
+116-->[com.google.android.datatransport:transport-runtime:3.1.0] C:\Users\Admin\.gradle\caches\8.14.6\transforms\e51213b8df98bcbb0e672ee767e6a925\transformed\transport-runtime-3.1.0\AndroidManifest.xml:34:13-37
+117    </application>
+118
+119</manifest>

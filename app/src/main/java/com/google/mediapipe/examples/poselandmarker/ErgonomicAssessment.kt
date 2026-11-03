@@ -73,20 +73,23 @@ fun ErgonomicResult.displayText(): String {
         if (rula.rightEstimatedFromFrontal) add("lado D estimado pelas duas vistas")
     }
     val estimateText = if (estimates.isEmpty()) "" else estimates.joinToString(", ") + "\n"
-    val leftText = l?.let { "E ${it.final.score}" } ?: "E não avaliado"
-    val rightText = r?.let { "D ${it.final.score}" } ?: "D não avaliado"
     val leftDetail = l?.let { "E: braço ${it.upperArm}, antebraço ${it.lowerArm}, punho ${it.wrist} → A ${it.groupA}" }
         ?: "E: landmarks insuficientes"
     val rightDetail = r?.let { "D: braço ${it.upperArm}, antebraço ${it.lowerArm}, punho ${it.wrist} → A ${it.groupA}" }
         ?: "D: landmarks insuficientes"
     val w = rula.worst
     val partial = if (l == null || r == null) "; avaliação parcial" else ""
-    return "RULA $leftText | $rightText (${w.final.risk}$partial)\n" +
-        "$leftDetail\n$rightDetail\n$estimateText" +
-        "B: pescoço ${w.neck}, tronco ${w.trunk}, pernas ${w.legs} → B ${w.groupB}\n" +
-        "Muscular +${w.muscleUse}; carga +${w.forceLoad}; $coverage\n" +
-        "Ajustes: $modifiers\n" +
-        "REBA ${reba.score} (${reba.risk})"
+    return "RULA · ${w.final.risk}$partial\n" +
+        "Esquerdo: ${l?.final?.score?.toString() ?: "não avaliado"}  |  Direito: ${r?.final?.score?.toString() ?: "não avaliado"}\n" +
+        "Ação: ${w.final.action}\n\n" +
+        "REBA simplificado · ${reba.score} (${reba.risk})\n" +
+        "Ação: ${reba.action}\n\n" +
+        "Detalhes do RULA\n$leftDetail\n$rightDetail\n$estimateText" +
+        "Pescoço ${w.neck}, tronco ${w.trunk}, pernas ${w.legs} → grupo B ${w.groupB}\n" +
+        "Atividade +${w.muscleUse}; carga +${w.forceLoad}; $coverage\n" +
+        "Ajustes: $modifiers\n\n" +
+        "Estimativas por imagem: confirme os ajustes e a carga. O REBA requer avaliação completa."
+
 }
 
 object ErgonomicAssessment {

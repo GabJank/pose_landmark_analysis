@@ -19,12 +19,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:background="@color/bottom_sheet_background"
+    android:background="@drawable/evaluation_sheet_background"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="@dimen/bottom_sheet_padding"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="24dp"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
+    app:behavior_peekHeight="@dimen/gallery_sheet_peek_height"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -32,116 +35,317 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Chevron indicating that the bottom sheet is expandable -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/evaluation_handle"
+            android:importantForAccessibility="no" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:contentDescription="@string/alt_bottom_sheet_chevron"
-                android:src="@drawable/icn_chevron_up" />
-        </RelativeLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sheetToggleButton"
+            style="@style/PostureOutlineButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Dados e resultados"
+            android:textColor="@color/ui_ink"
+            android:textSize="16sp"
+            app:backgroundTint="@color/ui_mint"
+            app:strokeWidth="0dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Sobre a tarefa"
+            android:textColor="@color/ui_ink"
+            android:textSize="21sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:lineSpacingExtra="3dp"
+            android:text="Complete as condições observadas para refinar as estimativas das fotos."
+            android:textColor="@color/ui_muted"
+            android:textSize="14sp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/ui_border"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:labelFor="@id/load_kg_input"
+                    android:text="Carga ou força aplicada"
+                    android:textColor="@color/ui_ink"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="Carga (kg)"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/ui_border"
+                    app:helperText="Use 0 quando não houver carga."
+                    app:helperTextTextColor="@color/ui_muted">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/load_kg_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:minHeight="52dp"
+                        android:textColor="@color/ui_ink"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/legs_unsupported_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:minHeight="48dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:text="Pernas sem apoio ou peso desequilibrado"
+                    android:textColor="@color/ui_ink"
+                    android:textSize="14sp" />
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/repeated_static_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:text="Postura repetitiva ou mantida por muito tempo"
+                    android:textColor="@color/ui_ink"
+                    android:textSize="14sp" />
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/poor_coupling_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:text="Pega ruim ou difícil de segurar"
+                    android:textColor="@color/ui_ink"
+                    android:textSize="14sp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/rula_adjustments_button"
+                    style="@style/PostureOutlineButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Conferir ajustes posturais" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Sua avaliação"
+            android:textColor="@color/ui_ink"
+            android:textSize="21sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:lineSpacingExtra="3dp"
+            android:text="RULA: membros superiores. REBA: corpo todo. As estimativas se complementam."
+            android:textColor="@color/ui_muted"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/resultsSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/ui_border"
+                app:strokeWidth="1dp">
+                <TextView
+                    android:id="@+id/rulaSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="5dp"
+                    android:padding="20dp"
+                    android:text=""
+                    android:textColor="@color/ui_ink"
+                    android:textSize="16sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/ui_border"
+                app:strokeWidth="1dp">
+                <TextView
+                    android:id="@+id/rebaSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="5dp"
+                    android:padding="20dp"
+                    android:text=""
+                    android:textColor="@color/ui_ink"
+                    android:textSize="16sp" />
+            </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Estimativas por imagem. Confira os pontos e os ajustes antes de interpretar."
+                android:textColor="@color/ui_muted"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/detailsButton"
+            style="@style/PostureOutlineButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Avaliação postural"
-            android:textColor="@color/bottom_sheet_text_color"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="Ver detalhes da avaliação"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/ergonomic_result_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="RULA/REBA: aguardando postura"
-            android:textColor="@color/bottom_sheet_text_color"
-            android:textStyle="bold" />
+            android:layout_marginTop="12dp"
+            android:background="@drawable/evaluation_card_background"
+            android:lineSpacingExtra="4dp"
+            android:padding="18dp"
+            android:text="Adicione as fotos frontal e lateral para ver as estimativas."
+            android:textColor="@color/ui_muted"
+            android:textSize="14sp" />
 
-        <CheckBox
-            android:id="@+id/legs_unsupported_input"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pernas sem apoio/desequilíbrio"
-            android:textColor="@color/bottom_sheet_text_color" />
-
-        <CheckBox
-            android:id="@+id/repeated_static_input"
-            android:layout_width="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="OWAS"
+            android:textColor="@color/ui_ink"
+            android:textSize="21sp" />
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Repetitiva ou estática"
-            android:textColor="@color/bottom_sheet_text_color" />
+            android:layout_marginTop="6dp"
+            android:lineSpacingExtra="3dp"
+            android:text="Classifique uma postura observando costas, braços, pernas e carga."
+            android:textColor="@color/ui_muted"
+            android:textSize="14sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/owas_button"
+            style="@style/PostureButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Avaliar postura com OWAS" />
+        <TextView
+            android:id="@+id/owas_result_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/evaluation_card_background"
+            android:lineSpacingExtra="4dp"
+            android:padding="18dp"
+            android:text="Sua classificação aparecerá aqui."
+            android:textColor="@color/ui_muted"
+            android:textSize="14sp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Ângulos detectados"
+            android:textColor="@color/ui_ink"
+            android:textSize="18sp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
+            android:layout_marginTop="12dp"
+            android:background="@drawable/evaluation_card_background"
+            android:orientation="vertical"
+            android:padding="18dp">
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/left_shoulder_label"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Carga (kg)"
-                android:textColor="@color/bottom_sheet_text_color" />
-
-            <EditText
-                android:id="@+id/load_kg_input"
-                android:layout_width="90dp"
+                android:text="Ombro esquerdo: --"
+                android:textColor="@color/ui_muted"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/right_shoulder_label"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="0"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:textColor="@color/bottom_sheet_text_color"
-                android:textColorHint="@color/bottom_sheet_text_color" />
+                android:layout_marginTop="8dp"
+                android:text="Ombro direito: --"
+                android:textColor="@color/ui_muted"
+                android:textSize="14sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@color/ui_border"
+                android:importantForAccessibility="no" />
+            <TextView
+                android:id="@+id/left_elbow_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cotovelo esquerdo: --"
+                android:textColor="@color/ui_muted"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/right_elbow_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Cotovelo direito: --"
+                android:textColor="@color/ui_muted"
+                android:textSize="14sp" />
         </LinearLayout>
-
-        <CheckBox
-            android:id="@+id/poor_coupling_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pega ruim"
-            android:textColor="@color/bottom_sheet_text_color" />
-
-        <Button
-            android:id="@+id/rula_adjustments_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ajustes RULA" />
-
-        <TextView
-            android:id="@+id/left_shoulder_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ombro esquerdo: --"
-            android:textColor="@color/bottom_sheet_text_color" />
-
-        <TextView
-            android:id="@+id/right_shoulder_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ombro direito: --"
-            android:textColor="@color/bottom_sheet_text_color" />
-
-        <TextView
-            android:id="@+id/left_elbow_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cotovelo esquerdo: --"
-            android:textColor="@color/bottom_sheet_text_color" />
-
-        <TextView
-            android:id="@+id/right_elbow_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cotovelo direito: --"
-            android:textColor="@color/bottom_sheet_text_color" />
 
         <!-- Inference time row -->
         <androidx.appcompat.widget.LinearLayoutCompat

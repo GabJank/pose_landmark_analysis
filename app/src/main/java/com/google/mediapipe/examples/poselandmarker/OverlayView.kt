@@ -68,6 +68,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
         updateScaleFactor()
+        val saved = canvas.save()
+        if (runningMode == RunningMode.IMAGE) {
+            canvas.translate((width - imageWidth * scaleFactor) / 2f,
+                (height - imageHeight * scaleFactor) / 2f)
+        }
         results?.let { poseLandmarkerResult ->
             for (landmarks in poseLandmarkerResult.landmarks()) {
                 for (normalizedLandmark in landmarks) {
@@ -96,6 +101,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 }
             }
         }
+        canvas.restoreToCount(saved)
     }
 
     private fun isVisible(landmark: NormalizedLandmark): Boolean =
