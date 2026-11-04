@@ -34,6 +34,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.FileProvider
+import java.io.File
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -58,6 +66,7 @@ import com.google.mediapipe.examples.poselandmarker.databinding.FragmentGalleryB
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import java.util.*
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -77,6 +86,15 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private var _fragmentGalleryBinding: FragmentGalleryBinding? = null
+    private var cameraProvider: ProcessCameraProvider? = null
+    private var cameraPreview: Preview? = null
+    private var imageCapture: ImageCapture? = null
+    private var liveAnalysis: ImageAnalysis? = null
+    private var liveExecutor: ExecutorService? = null
+    private var liveHelper: Array<PoseLandmarkerHelper?>? = null
+    private var cameraActive = false
+    private var cameraGeneration = 0
+    private var cameraFacing = CameraSelector.LENS_FACING_BACK
     private var showAssessmentDetails = false
     private var rulaAdjustments = RulaAdjustments()
     private var latestAngles: com.google.mediapipe.examples.poselandmarker.PoseAngles? = null
@@ -196,6 +214,15 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         fragmentGalleryBinding.selectLateralButton.setOnClickListener {
             selectView(RulaView.LATERAL)
         }
+        fragmentGalleryBinding.toggleCameraButton.setOnClickListener {
+            if (cameraActive) stopCamera() else launchCameraCapture()
+        }
+        fragmentGalleryBinding.captureButton.setOnClickListener { capturePhoto() }
+        fragmentGalleryBinding.switchCameraButton.setOnClickListener {
+            cameraFacing = if (cameraFacing == CameraSelector.LENS_FACING_BACK)
+                CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_BACK
+            startCamera()
+        }
         fragmentGalleryBinding.addOrReplacePhotoButton.setOnClickListener {
             showPhotoSourceChooser()
         }
@@ -268,7 +295,10 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         AlertDialog.Builder(requireContext())
             .setTitle("Adicionar foto $viewName")
             .setItems(arrayOf("Tirar foto", "Escolher da galeria")) { _, option ->
-                if (option == 0) launchCameraCapture() else getContent.launch(arrayOf("image/*"))
+                if (option == 0) launchCameraCapture() else {
+                    stopCamera()
+                    getContent.launch(arrayOf("image/*"))
+                }
             }
             .show()
     }
@@ -283,13 +313,157 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         }
     }
 
-    private fun launchCameraCaptureInternal() {
-        findNavController().navigate(
-            R.id.action_gallery_to_capture,
-            bundleOf(
-                CAPTURE_VIEW_KEY to if (pendingRulaView == RulaView.FRONTAL) "frontal" else "lateral"
-            )
-        )
+    private fun launchCameraCaptureInternal() = startCamera()
+
+    private fun startCamera() {
+        stopCamera()
+        cameraActive = true
+        val generation = ++cameraGeneration
+        fragmentGalleryBinding.cameraPreview.visibility = View.VISIBLE
+        fragmentGalleryBinding.cameraControls.visibility = View.VISIBLE
+        fragmentGalleryBinding.liveOverlay.visibility = View.VISIBLE
+        fragmentGalleryBinding.liveStatus.visibility = View.VISIBLE
+        fragmentGalleryBinding.liveStatus.text = "Procurando postura…"
+        fragmentGalleryBinding.toggleCameraButton.text = "Desativar câmera"
+        fragmentGalleryBinding.captureButton.isEnabled = false
+        val future = ProcessCameraProvider.getInstance(requireContext())
+        future.addListener({
+            if (!cameraActive || generation != cameraGeneration || _fragmentGalleryBinding == null) return@addListener
+            try {
+                val provider = future.get()
+                cameraProvider = provider
+                cameraPreview?.let { provider.unbind(it) }
+                imageCapture?.let { provider.unbind(it) }
+                val preview = Preview.Builder().build().also {
+                    it.setSurfaceProvider(fragmentGalleryBinding.cameraPreview.surfaceProvider)
+                }
+                val capture = ImageCapture.Builder().build()
+                val executor = Executors.newSingleThreadExecutor()
+                liveExecutor = executor
+                val helperSlot = arrayOfNulls<PoseLandmarkerHelper>(1)
+                liveHelper = helperSlot
+                val context = requireContext().applicationContext
+                val facingFront = cameraFacing == CameraSelector.LENS_FACING_FRONT
+                executor.execute {
+                    helperSlot[0] = PoseLandmarkerHelper(
+                        context = context,
+                        runningMode = RunningMode.LIVE_STREAM,
+                        currentModel = PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_FULL,
+                        currentDelegate = PoseLandmarkerHelper.DELEGATE_CPU,
+                        poseLandmarkerHelperListener = object : PoseLandmarkerHelper.LandmarkerListener {
+                            override fun onError(error: String, errorCode: Int) {
+                                activity?.runOnUiThread {
+                                    if (cameraActive && generation == cameraGeneration && _fragmentGalleryBinding != null)
+                                        fragmentGalleryBinding.liveStatus.text = "Erro na análise da postura: $error"
+                                }
+                            }
+                            override fun onResults(resultBundle: PoseLandmarkerHelper.ResultBundle) {
+                                activity?.runOnUiThread {
+                                    if (cameraActive && generation == cameraGeneration && _fragmentGalleryBinding != null)
+                                        showLiveResult(resultBundle)
+                                }
+                            }
+                        }
+                    )
+                }
+                val analysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                    .setTargetRotation(fragmentGalleryBinding.cameraPreview.display.rotation)
+                    .build().also { useCase ->
+                        useCase.setAnalyzer(executor) { image ->
+                            val helper = helperSlot[0]
+                            if (helper == null) image.close() else helper.detectLiveStream(image, facingFront)
+                        }
+                    }
+                liveAnalysis = analysis
+                cameraPreview = preview
+                imageCapture = capture
+                provider.bindToLifecycle(viewLifecycleOwner, CameraSelector.Builder().requireLensFacing(cameraFacing).build(), preview, capture, analysis)
+                fragmentGalleryBinding.captureButton.isEnabled = true
+            } catch (e: Exception) {
+                Log.e(TAG, "Erro ao iniciar câmera", e)
+                stopCamera()
+                Toast.makeText(requireContext(), "Não foi possível iniciar a câmera.", Toast.LENGTH_SHORT).show()
+            }
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    private fun stopCamera() {
+        cameraActive = false
+        cameraGeneration++
+        cameraPreview?.let { cameraProvider?.unbind(it) }
+        imageCapture?.let { cameraProvider?.unbind(it) }
+        liveAnalysis?.clearAnalyzer()
+        liveAnalysis?.let { cameraProvider?.unbind(it) }
+        liveAnalysis = null
+        val helperSlot = liveHelper
+        liveHelper = null
+        liveExecutor?.let { executor ->
+            executor.execute { helperSlot?.get(0)?.clearPoseLandmarker() }
+            executor.shutdown()
+        }
+        liveExecutor = null
+        cameraPreview = null
+        imageCapture = null
+        _fragmentGalleryBinding?.let {
+            it.cameraPreview.visibility = View.GONE
+            it.cameraControls.visibility = View.GONE
+            it.liveOverlay.clear()
+            it.liveOverlay.visibility = View.GONE
+            it.liveStatus.visibility = View.GONE
+            it.toggleCameraButton.text = "Ativar câmera"
+        }
+    }
+
+    private fun showLiveResult(bundle: PoseLandmarkerHelper.ResultBundle) {
+        val result = bundle.results.firstOrNull()
+        if (result == null || result.landmarks().isEmpty()) {
+            fragmentGalleryBinding.liveOverlay.clear()
+            fragmentGalleryBinding.liveStatus.text = "Nenhuma postura detectada. Enquadre o corpo inteiro."
+            return
+        }
+        fragmentGalleryBinding.liveOverlay.setResults(result, bundle.inputImageHeight, bundle.inputImageWidth, RunningMode.LIVE_STREAM)
+        val angles = PoseAngleCalculator.calculate(result)
+        fragmentGalleryBinding.liveStatus.text = if (angles == null) {
+            "Postura detectada. Mostre ombros, quadris e pelo menos um braço."
+        } else {
+            val assessment = ErgonomicAssessment.calculate(angles, ergonomicInputs())
+            val shoulder = if (angles.leftArmDetected) angles.leftShoulder else angles.rightShoulder
+            val elbow = if (angles.leftArmDetected) angles.leftElbow else angles.rightElbow
+            String.format(Locale.US, "Postura em tempo real · Ombro: %.0f° · Cotovelo: %.0f°\nRULA: %d/7 · REBA simplificado: %d/15", shoulder, elbow, assessment.rula.worst.final.score, assessment.reba.score)
+        }
+    }
+
+    private fun capturePhoto() {
+        val capture = imageCapture ?: return
+        val context = requireContext()
+        val directory = File(context.cacheDir, "assessment_photos").apply { mkdirs() }
+        val photo = try { File.createTempFile("rula_capture_", ".jpg", directory) } catch (e: Exception) {
+            Toast.makeText(context, "Não foi possível salvar a foto.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        fragmentGalleryBinding.captureButton.isEnabled = false
+        setUiEnabled(false)
+        fragmentGalleryBinding.switchCameraButton.isEnabled = false
+        capture.takePicture(ImageCapture.OutputFileOptions.Builder(photo).build(), ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    if (_fragmentGalleryBinding == null) return
+                    fragmentGalleryBinding.switchCameraButton.isEnabled = true
+                    stopCamera()
+                    runDetectionOnImage(FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photo))
+                }
+                override fun onError(exception: ImageCaptureException) {
+                    photo.delete()
+                    if (_fragmentGalleryBinding == null) return
+                    setUiEnabled(true)
+                    fragmentGalleryBinding.toggleCameraButton.isEnabled = true
+                    fragmentGalleryBinding.switchCameraButton.isEnabled = true
+                    fragmentGalleryBinding.captureButton.isEnabled = cameraActive
+                    Toast.makeText(context, "Não foi possível tirar a foto.", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     override fun onPause() {
