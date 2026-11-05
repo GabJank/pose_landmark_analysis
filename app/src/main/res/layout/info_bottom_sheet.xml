@@ -258,6 +258,31 @@
             android:textColor="@color/ui_muted"
             android:textSize="14sp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveAssessmentButton"
+            style="@style/PostureButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:enabled="false"
+            android:text="@string/save_assessment" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/assessmentHistoryButton"
+            style="@style/PostureOutlineButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/assessment_history" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/assessment_history_hint"
+            android:textColor="@color/ui_muted"
+            android:textSize="13sp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

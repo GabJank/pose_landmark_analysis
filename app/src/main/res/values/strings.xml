@@ -55,4 +55,24 @@
         <item>Pose Landmarker Lite</item>
         <item>Pose Landmarker Heavy</item>
     </string-array>
+    <string name="save_assessment">Salvar avaliação</string>
+    <string name="assessment_history">Histórico e exportação</string>
+    <string name="assessment_history_hint">Salve os resultados e as fotos, com e sem pontos, usando um código de teste. O histórico fica neste aparelho. O CSV exporta apenas os dados, não as fotos.</string>
+    <string name="assessment_test_code">Código do teste</string>
+    <string name="assessment_test_code_hint">Ex.: P01_POST01. Use um código, sem nomes.</string>
+    <string name="assessment_code_error">Use de 1 a 32 letras, números, hífens ou sublinhados.</string>
+    <string name="assessment_saved">Avaliação salva no histórico.</string>
+    <string name="assessment_save_error">Não foi possível salvar. Tente novamente.</string>
+    <string name="assessment_history_error">Não foi possível ler o histórico. Os registros foram mantidos.</string>
+    <string name="assessment_history_empty">Nenhuma avaliação salva. Complete as duas fotos e salve o resultado.</string>
+    <string name="assessment_export">Exportar CSV</string>
+    <string name="assessment_exported">Resultados exportados em CSV.</string>
+    <string name="assessment_export_error">Não foi possível concluir a exportação. Tente novamente; o histórico continua salvo.</string>
+    <string name="assessment_delete">Excluir registro</string>
+    <string name="assessment_delete_confirm">Excluir o teste %1$s e suas fotos deste aparelho? Arquivos CSV já exportados não serão alterados.</string>
+    <string name="assessment_delete_error">Não foi possível excluir o registro.</string>
+    <string name="assessment_clear_history">Limpar histórico</string>
+    <string name="assessment_clear_confirm">Apagar todas as avaliações e suas fotos deste aparelho? Esta ação não pode ser desfeita. Arquivos CSV já exportados não serão alterados.</string>
+    <string name="assessment_clear_error">Não foi possível limpar o histórico. Tente novamente.</string>
+    <string name="assessment_invalid_load">Informe uma carga válida, maior ou igual a zero.</string>
 </resources>

@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 
 object OwasDialog {
-    fun show(context: Context, angles: PoseAngles?, onApply: (String) -> Unit) {
+    fun show(context: Context, angles: PoseAngles?, onApply: (OwasObservation) -> Unit) {
         val fields = listOf(
             "Costas" to listOf("Selecione", "Retas", "Inclinadas", "Torção ou inclinação lateral", "Inclinadas e torcidas/laterais"),
             "Braços" to listOf("Selecione", "Ambos abaixo dos ombros", "Um na altura ou acima dos ombros", "Ambos na altura ou acima dos ombros"),
@@ -41,8 +41,7 @@ object OwasDialog {
                 if (codes.any { it == 0 }) {
                     android.widget.Toast.makeText(context, "Selecione todas as opções", android.widget.Toast.LENGTH_SHORT).show()
                 } else {
-                    val result = OwasAssessment.calculate(codes[0], codes[1], codes[2], codes[3])
-                    onApply("OWAS ${codes.joinToString("")} — categoria ${result.score} (${result.risk})\n${result.action}\nUma observação; avalie também a frequência das posturas na tarefa.")
+                    onApply(OwasObservation(codes[0], codes[1], codes[2], codes[3]))
                     dialog.dismiss()
                 }
             }

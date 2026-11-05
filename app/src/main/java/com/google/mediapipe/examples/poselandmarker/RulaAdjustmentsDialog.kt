@@ -16,7 +16,7 @@ object RulaAdjustmentsDialog {
             "Ombro esquerdo elevado", "Ombro direito elevado",
             "Braço esquerdo abduzido", "Braço direito abduzido",
             "Braço esquerdo apoiado", "Braço direito apoiado",
-            "Braço esquerdo cruza linha média/fora", "Braço direito cruza linha média/fora",
+            "Antebraço esquerdo cruza o corpo ou fica afastado para o lado", "Antebraço direito cruza o corpo ou fica afastado para o lado",
             "Punho esquerdo torcido", "Punho direito torcido",
             "Pescoço rotacionado", "Pescoço inclinado lateralmente",
             "Tronco rotacionado", "Tronco inclinado lateralmente"

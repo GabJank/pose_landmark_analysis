@@ -1,5 +1,17 @@
 ## Avaliação ergonômica
 
+### Histórico das avaliações
+
+Em **Dados e resultados**, complete as fotos frontal e lateral, confira a carga e os ajustes e, se desejar incluir OWAS, faça sua classificação manual depois de selecionar as fotos. Toque em **Salvar avaliação** e informe um código de teste, por exemplo `P01_POST01`, usando até 32 letras, números, hífens ou sublinhados. Cada salvamento cria um registro independente. Trocar uma foto limpa a classificação OWAS, que deve ser preenchida novamente para a postura escolhida.
+
+Em **Histórico e exportação**, consulte os registros ou escolha **Exportar CSV** para selecionar o destino do arquivo pelo Android. Nas fotos de uma avaliação, deslize ou use os botões para navegar entre as imagens. Na tela inicial, deslize sobre a foto para alternar entre as vistas frontal e lateral já adicionadas. A exclusão individual pede confirmação e não altera arquivos já exportados.
+
+O histórico guarda data, código, ângulos, indicadores de detecção, entradas, ajustes, RULA, REBA simplificado e, quando informado, OWAS. Novas avaliações também guardam fotos frontal e lateral, com e sem pontos, no armazenamento privado do aplicativo; toque no registro e escolha **Ver fotos**. Registros antigos não incluem fotos ou resultados que não foram salvos. Os valores não são recalculados. Não informe nomes no código. A base e as fotos ficam fora do backup automático; desinstalar o app ou limpar seus dados apaga o histórico e as imagens.
+
+O CSV exporta somente os dados, sem as fotos. Usa UTF-8 com BOM, separador `;`, vírgula decimal e data/hora UTC na coluna `data_hora_utc`. No Excel/Google Sheets, selecione esses parâmetros ao importar, caso necessário. Campos de membros não detectados ficam vazios; os indicadores de detecção e `rula_parcial` devem ser considerados ao analisar os resultados. O arquivo registra as estimativas atuais do protótipo: não contém valores de referência manual nem comprova sua precisão.
+
+### Análise das posturas
+
 Na galeria, selecione fotos frontal e lateral da mesma postura. O aplicativo apresenta estimativas de RULA e REBA; informe carga, atividade, apoio e pega e confirme os ajustes posturais. Os ângulos e ajustes dependem da visibilidade e do enquadramento, e a estimativa REBA é simplificada: não cobre todos os modificadores nem substitui a aplicação integral do método. Revise os resultados com profissional habilitado.
 
 Para OWAS, selecione **Avaliar OWAS** e informe costas, braços, pernas e carga ou força observados. A categoria corresponde a uma única observação. Uma análise da tarefa exige amostragem ao longo do ciclo e consideração das frequências das posturas. A tabela de categorias segue a [Universitat Politècnica de València](https://www.ergonautas.upv.es/metodos/owas/owas-ayuda.php).

@@ -47,22 +47,29 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.google.mediapipe.examples.poselandmarker.MainViewModel
 import com.google.mediapipe.examples.poselandmarker.R
 import com.google.mediapipe.examples.poselandmarker.CapturedPoseStore
+import com.google.mediapipe.examples.poselandmarker.AssessmentHistoryStore
+import com.google.mediapipe.examples.poselandmarker.AssessmentPhotos
+import com.google.mediapipe.examples.poselandmarker.enablePhotoSwipe
+import com.google.mediapipe.examples.poselandmarker.AssessmentRecords
 import com.google.mediapipe.examples.poselandmarker.PoseAngleCalculator
 import com.google.mediapipe.examples.poselandmarker.ErgonomicAssessment
 import com.google.mediapipe.examples.poselandmarker.ErgonomicInputs
 import com.google.mediapipe.examples.poselandmarker.displayText
 import com.google.mediapipe.examples.poselandmarker.RulaAdjustments
 import com.google.mediapipe.examples.poselandmarker.OwasDialog
+import com.google.mediapipe.examples.poselandmarker.OwasObservation
 import com.google.mediapipe.examples.poselandmarker.RulaAdjustmentsDialog
 import com.google.mediapipe.examples.poselandmarker.RulaTwoViewSession
 import com.google.mediapipe.examples.poselandmarker.PoseLandmarkerHelper
 import com.google.mediapipe.examples.poselandmarker.databinding.FragmentGalleryBinding
+import com.google.mediapipe.examples.poselandmarker.databinding.DialogSaveAssessmentBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import java.util.*
@@ -70,6 +77,11 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.text.SimpleDateFormat
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
@@ -96,7 +108,12 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private var cameraGeneration = 0
     private var cameraFacing = CameraSelector.LENS_FACING_BACK
     private var showAssessmentDetails = false
+    private var savingAssessment = false
+    private var imageProcessing = false
+    private var animatingPhoto = false
+    private var historyDialog: AlertDialog? = null
     private var rulaAdjustments = RulaAdjustments()
+    private var owasObservation: OwasObservation? = null
     private var latestAngles: com.google.mediapipe.examples.poselandmarker.PoseAngles? = null
     private var rulaSession = RulaTwoViewSession()
     private var pendingRulaView = RulaView.FRONTAL
@@ -104,7 +121,6 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private var lateralSnapshot: ViewSnapshot? = null
     private val fragmentGalleryBinding
         get() = _fragmentGalleryBinding!!
-    private lateinit var poseLandmarkerHelper: PoseLandmarkerHelper
     private val viewModel: MainViewModel by activityViewModels()
 
     /** Blocking ML operations are performed using this executor */
@@ -155,6 +171,7 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        imageProcessing = false
         _fragmentGalleryBinding =
             FragmentGalleryBinding.inflate(inflater, container, false)
 
@@ -187,9 +204,11 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         }
         fragmentGalleryBinding.bottomSheetLayout.owasButton.setOnClickListener {
             OwasDialog.show(requireContext(), latestAngles) { result ->
-                fragmentGalleryBinding.bottomSheetLayout.owasResultLabel.text = result
+                owasObservation = result
+                fragmentGalleryBinding.bottomSheetLayout.owasResultLabel.text = result.displayText()
             }
         }
+        owasObservation?.let { fragmentGalleryBinding.bottomSheetLayout.owasResultLabel.text = it.displayText() }
         fragmentGalleryBinding.bottomSheetLayout.rulaAdjustmentsButton.setOnClickListener {
             RulaAdjustmentsDialog.show(requireContext(), rulaAdjustments) {
                 rulaAdjustments = it
@@ -213,6 +232,16 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         }
         fragmentGalleryBinding.selectLateralButton.setOnClickListener {
             selectView(RulaView.LATERAL)
+        }
+        fragmentGalleryBinding.photoPreview.enablePhotoSwipe(
+            canSwipe = { !cameraActive && !imageProcessing && !animatingPhoto && frontalSnapshot != null && lateralSnapshot != null }
+        ) { direction ->
+            val target = when {
+                direction > 0 && pendingRulaView == RulaView.FRONTAL -> RulaView.LATERAL
+                direction < 0 && pendingRulaView == RulaView.LATERAL -> RulaView.FRONTAL
+                else -> null
+            }
+            if (target != null) animatePhotoTransition(target, direction)
         }
         fragmentGalleryBinding.toggleCameraButton.setOnClickListener {
             if (cameraActive) stopCamera() else launchCameraCapture()
@@ -244,6 +273,8 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             showAssessmentDetails = !showAssessmentDetails
             refreshErgonomicLabel()
         }
+        sheet.saveAssessmentButton.setOnClickListener { saveAssessment() }
+        sheet.assessmentHistoryButton.setOnClickListener { startActivity(android.content.Intent(requireContext(), com.google.mediapipe.examples.poselandmarker.AssessmentHistoryActivity::class.java)) }
         initBottomSheetControls()
         updatePhotoControls()
         refreshErgonomicLabel()
@@ -259,6 +290,22 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         } else {
             showSnapshot(snapshot)
         }
+    }
+
+    private fun animatePhotoTransition(target: RulaView, direction: Int) {
+        val binding = fragmentGalleryBinding
+        val preview = binding.photoPreview
+        val startingView = pendingRulaView
+        val offset = 48 * resources.displayMetrics.density * direction
+        animatingPhoto = true
+        preview.animate().translationX(-offset).alpha(0f).setDuration(130).withEndAction {
+            if (_fragmentGalleryBinding !== binding) return@withEndAction
+            if (!cameraActive && !imageProcessing && pendingRulaView == startingView) selectView(target)
+            preview.translationX = offset
+            preview.animate().translationX(0f).alpha(1f).setDuration(170).withEndAction {
+                animatingPhoto = false
+            }.start()
+        }.start()
     }
 
     private fun updatePhotoControls() {
@@ -278,9 +325,11 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private fun showSnapshot(snapshot: ViewSnapshot) {
+        val binding = fragmentGalleryBinding
         updateDisplayView(MediaType.IMAGE)
         fragmentGalleryBinding.imageResult.setImageBitmap(snapshot.bitmap)
         fragmentGalleryBinding.overlay.post {
+            if (_fragmentGalleryBinding !== binding) return@post
             fragmentGalleryBinding.overlay.setResults(
                 snapshot.result,
                 snapshot.bitmap.height,
@@ -436,6 +485,7 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private fun capturePhoto() {
+        val binding = fragmentGalleryBinding
         val capture = imageCapture ?: return
         val context = requireContext()
         val directory = File(context.cacheDir, "assessment_photos").apply { mkdirs() }
@@ -449,14 +499,14 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         capture.takePicture(ImageCapture.OutputFileOptions.Builder(photo).build(), ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    if (_fragmentGalleryBinding == null) return
+                    if (_fragmentGalleryBinding !== binding) return
                     fragmentGalleryBinding.switchCameraButton.isEnabled = true
                     stopCamera()
                     runDetectionOnImage(FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photo))
                 }
                 override fun onError(exception: ImageCaptureException) {
                     photo.delete()
-                    if (_fragmentGalleryBinding == null) return
+                    if (_fragmentGalleryBinding !== binding) return
                     setUiEnabled(true)
                     fragmentGalleryBinding.toggleCameraButton.isEnabled = true
                     fragmentGalleryBinding.switchCameraButton.isEnabled = true
@@ -472,6 +522,83 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         }
         fragmentGalleryBinding.videoView.visibility = View.GONE
         super.onPause()
+    }
+
+    override fun onDestroyView() {
+        _fragmentGalleryBinding?.photoPreview?.animate()?.cancel()
+        animatingPhoto = false
+        historyDialog?.dismiss()
+        historyDialog = null
+        stopCamera()
+        if (::backgroundExecutor.isInitialized) backgroundExecutor.shutdown()
+        _fragmentGalleryBinding = null
+        super.onDestroyView()
+    }
+
+    private fun saveAssessment() {
+        if (savingAssessment || imageProcessing || latestAngles == null || !validLoad()) return
+        val session = rulaSession.copy()
+        val inputs = ergonomicInputs()
+        val owas = owasObservation
+        val frontal = frontalSnapshot ?: return
+        val lateral = lateralSnapshot ?: return
+        val fields = DialogSaveAssessmentBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle(R.string.save_assessment)
+            .setView(fields.root)
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Salvar", null)
+            .create()
+        historyDialog = dialog
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val code = fields.testCodeInput.text.toString().trim()
+                if (!code.matches(Regex("[A-Za-z0-9][A-Za-z0-9_-]{0,31}"))) {
+                    fields.root.error = getString(R.string.assessment_code_error)
+                    return@setOnClickListener
+                }
+                val record = try {
+                    AssessmentRecords.create(code, session, inputs, owas)
+                } catch (error: IllegalArgumentException) {
+                    fields.root.error = error.message
+                    return@setOnClickListener
+                }
+                val appContext = requireContext().applicationContext
+                dialog.dismiss()
+                savingAssessment = true
+                refreshErgonomicLabel()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            val photos = AssessmentPhotos(appContext)
+                            photos.save(record.id, frontal.bitmap, frontal.result.landmarks(), lateral.bitmap, lateral.result.landmarks())
+                            try {
+                                AssessmentHistoryStore(appContext).use { it.save(record) }
+                            } catch (error: Exception) {
+                                photos.delete(record.id)
+                                throw error
+                            }
+                        }
+                        Toast.makeText(appContext, R.string.assessment_saved, Toast.LENGTH_SHORT).show()
+                    } catch (cancelled: CancellationException) {
+                        throw cancelled
+                    } catch (error: Exception) {
+                        Log.e(TAG, "Unable to save assessment", error)
+                        Toast.makeText(appContext, R.string.assessment_save_error, Toast.LENGTH_LONG).show()
+                    } finally {
+                        savingAssessment = false
+                        if (_fragmentGalleryBinding != null) refreshErgonomicLabel()
+                    }
+                }
+            }
+        }
+        dialog.show()
+    }
+
+    private fun validLoad(): Boolean {
+        val raw = fragmentGalleryBinding.bottomSheetLayout.loadKgInput.text.toString().trim()
+        val number = raw.replace(',', '.').toDoubleOrNull()
+        return raw.isEmpty() || (number != null && number.isFinite() && number >= 0.0)
     }
 
     private fun initBottomSheetControls() {
@@ -582,7 +709,7 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
                     p2: Int,
                     p3: Long
                 ) {
-                    poseLandmarkerHelper.currentModel = p2
+                    viewModel.setModel(p2)
                     updateControlsUi()
                 }
 
@@ -617,90 +744,90 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         fragmentGalleryBinding.tvPlaceholder.visibility = View.VISIBLE
     }
 
-    // Load and display the image.
+    // Each analysis owns its helper and only updates the view that requested it.
     private fun runDetectionOnImage(uri: Uri) {
+        val binding = fragmentGalleryBinding
+        val appContext = requireContext().applicationContext
+        val host = requireActivity()
         setUiEnabled(false)
-        backgroundExecutor = Executors.newSingleThreadScheduledExecutor()
         updateDisplayView(MediaType.IMAGE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val source = ImageDecoder.createSource(
-                requireActivity().contentResolver,
-                uri
-            )
-            ImageDecoder.decodeBitmap(source)
-        } else {
-            MediaStore.Images.Media.getBitmap(
-                requireActivity().contentResolver,
-                uri
-            )
+
+        fun showFailure() = host.runOnUiThread {
+            if (_fragmentGalleryBinding !== binding) return@runOnUiThread
+            clearPendingViewResult()
+            setUiEnabled(true)
+            Toast.makeText(appContext, "Não foi possível analisar a foto. Tente novamente.", Toast.LENGTH_LONG).show()
         }
-            .copy(Bitmap.Config.ARGB_8888, true)
-            ?.let { bitmap ->
-                fragmentGalleryBinding.imageResult.setImageBitmap(bitmap)
 
-                // Run pose landmarker on the input image
-                backgroundExecutor.execute {
-
-                    poseLandmarkerHelper =
-                        PoseLandmarkerHelper(
-                            context = requireContext(),
-                            runningMode = RunningMode.IMAGE,
-                            minPoseDetectionConfidence = PoseLandmarkerHelper.DEFAULT_POSE_DETECTION_CONFIDENCE,
-                            minPoseTrackingConfidence = PoseLandmarkerHelper.DEFAULT_POSE_TRACKING_CONFIDENCE,
-                            minPosePresenceConfidence = PoseLandmarkerHelper.DEFAULT_POSE_PRESENCE_CONFIDENCE,
-                            currentModel = PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_FULL,
-                            currentDelegate = PoseLandmarkerHelper.DELEGATE_CPU
-                        )
-
-                    var detectionResult = poseLandmarkerHelper.detectImage(bitmap)
-                    val firstAttemptEmpty = detectionResult?.results?.firstOrNull()
-                        ?.landmarks()?.isEmpty() != false
-                    if (firstAttemptEmpty) {
-                        poseLandmarkerHelper.clearPoseLandmarker()
-                        poseLandmarkerHelper = PoseLandmarkerHelper(
-                            context = requireContext(),
-                            runningMode = RunningMode.IMAGE,
-                            minPoseDetectionConfidence = PoseLandmarkerHelper.DEFAULT_POSE_DETECTION_CONFIDENCE,
-                            minPoseTrackingConfidence = PoseLandmarkerHelper.DEFAULT_POSE_TRACKING_CONFIDENCE,
-                            minPosePresenceConfidence = PoseLandmarkerHelper.DEFAULT_POSE_PRESENCE_CONFIDENCE,
-                            currentModel = PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_HEAVY,
-                            currentDelegate = PoseLandmarkerHelper.DELEGATE_CPU
-                        )
-                        detectionResult = poseLandmarkerHelper.detectImage(bitmap)
-                    }
-
-                    detectionResult?.let { result ->
-                        activity?.runOnUiThread {
-                            val poseResult = result.results.firstOrNull()
-                            if (poseResult == null || poseResult.landmarks().isEmpty()) {
-                                clearPendingViewResult()
-                                setUiEnabled(true)
-                                fragmentGalleryBinding.bottomSheetLayout.ergonomicResultLabel.text =
-                                    "RULA: nenhuma postura encontrada nessa foto"
-                                return@runOnUiThread
-                            }
-
-                            val snapshot = ViewSnapshot(bitmap, poseResult)
-                            if (pendingRulaView == RulaView.FRONTAL) {
-                                frontalSnapshot = snapshot
-                            } else {
-                                lateralSnapshot = snapshot
-                            }
-                            showSnapshot(snapshot)
-                            updateAngleLabels(poseResult)
-
-                            setUiEnabled(true)
-                            fragmentGalleryBinding.bottomSheetLayout.inferenceTimeVal.text =
-                                String.format("%d ms", result.inferenceTime)
-                        }
-                    } ?: run { Log.e(TAG, "Error running pose landmarker.") }
-
-                    poseLandmarkerHelper.clearPoseLandmarker()
-                }
+        val bitmap = try {
+            val image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(ImageDecoder.createSource(appContext.contentResolver, uri))
+            } else {
+                MediaStore.Images.Media.getBitmap(appContext.contentResolver, uri)
             }
+            requireNotNull(image.copy(Bitmap.Config.ARGB_8888, true))
+        } catch (error: Exception) {
+            Log.e(TAG, "Unable to read image", error)
+            showFailure()
+            return
+        }
+        binding.imageResult.setImageBitmap(bitmap)
+        val executor = Executors.newSingleThreadScheduledExecutor()
+        backgroundExecutor = executor
+        executor.execute {
+            var helper: PoseLandmarkerHelper? = null
+            try {
+                helper = PoseLandmarkerHelper(
+                    context = appContext,
+                    runningMode = RunningMode.IMAGE,
+                    currentModel = PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_FULL,
+                    currentDelegate = PoseLandmarkerHelper.DELEGATE_CPU
+                )
+                var detection = helper.detectImage(bitmap)
+                if (detection?.results?.firstOrNull()?.landmarks()?.isEmpty() != false) {
+                    helper.clearPoseLandmarker()
+                    helper = PoseLandmarkerHelper(
+                        context = appContext,
+                        runningMode = RunningMode.IMAGE,
+                        currentModel = PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_HEAVY,
+                        currentDelegate = PoseLandmarkerHelper.DELEGATE_CPU
+                    )
+                    detection = helper.detectImage(bitmap)
+                }
+                val result = detection
+                if (result == null) {
+                    showFailure()
+                } else host.runOnUiThread {
+                    if (_fragmentGalleryBinding !== binding) return@runOnUiThread
+                    val pose = result.results.firstOrNull()
+                    if (pose == null || pose.landmarks().isEmpty()) {
+                        clearPendingViewResult()
+                        setUiEnabled(true)
+                        binding.bottomSheetLayout.ergonomicResultLabel.text = "RULA: nenhuma postura encontrada nessa foto"
+                        return@runOnUiThread
+                    }
+                    val snapshot = ViewSnapshot(bitmap, pose)
+                    if (pendingRulaView == RulaView.FRONTAL) frontalSnapshot = snapshot
+                    else lateralSnapshot = snapshot
+                    showSnapshot(snapshot)
+                    updateAngleLabels(pose)
+                    setUiEnabled(true)
+                    binding.bottomSheetLayout.inferenceTimeVal.text = String.format("%d ms", result.inferenceTime)
+                }
+            } catch (error: Exception) {
+                Log.e(TAG, "Unable to analyze image", error)
+                showFailure()
+            } finally {
+                helper?.clearPoseLandmarker()
+                executor.shutdown()
+            }
+        }
     }
 
     private fun runDetectionOnVideo(uri: Uri) {
+        val binding = fragmentGalleryBinding
+        val appContext = requireContext().applicationContext
+        val host = requireActivity()
         setUiEnabled(false)
         updateDisplayView(MediaType.VIDEO)
 
@@ -712,11 +839,12 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         }
 
         backgroundExecutor = Executors.newSingleThreadScheduledExecutor()
-        backgroundExecutor.execute {
+        val executor = backgroundExecutor
+        executor.execute {
 
-            poseLandmarkerHelper =
+            val videoHelper =
                 PoseLandmarkerHelper(
-                    context = requireContext(),
+                    context = appContext,
                     runningMode = RunningMode.VIDEO,
                     minPoseDetectionConfidence = PoseLandmarkerHelper.DEFAULT_POSE_DETECTION_CONFIDENCE,
                     minPoseTrackingConfidence = PoseLandmarkerHelper.DEFAULT_POSE_TRACKING_CONFIDENCE,
@@ -725,23 +853,28 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
                     currentDelegate = PoseLandmarkerHelper.DELEGATE_CPU
                 )
 
-            activity?.runOnUiThread {
+            host.runOnUiThread {
+                if (_fragmentGalleryBinding !== binding) return@runOnUiThread
                 fragmentGalleryBinding.videoView.visibility = View.GONE
                 fragmentGalleryBinding.progress.visibility = View.VISIBLE
             }
 
-            poseLandmarkerHelper.detectVideoFile(uri, VIDEO_INTERVAL_MS)
+            videoHelper.detectVideoFile(uri, VIDEO_INTERVAL_MS)
                 ?.let { resultBundle ->
-                    activity?.runOnUiThread { displayVideoResult(resultBundle) }
+                    host.runOnUiThread {
+                        if (_fragmentGalleryBinding !== binding) return@runOnUiThread
+                        displayVideoResult(resultBundle, executor)
+                    }
                 }
                 ?: run { Log.e(TAG, "Error running pose landmarker.") }
 
-            poseLandmarkerHelper.clearPoseLandmarker()
+            videoHelper.clearPoseLandmarker()
         }
     }
 
     // Setup and display the video.
-    private fun displayVideoResult(result: PoseLandmarkerHelper.ResultBundle) {
+    private fun displayVideoResult(result: PoseLandmarkerHelper.ResultBundle, executor: ScheduledExecutorService) {
+        val binding = fragmentGalleryBinding
 
         fragmentGalleryBinding.videoView.visibility = View.VISIBLE
         fragmentGalleryBinding.progress.visibility = View.GONE
@@ -749,9 +882,10 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         fragmentGalleryBinding.videoView.start()
         val videoStartTimeMs = SystemClock.uptimeMillis()
 
-        backgroundExecutor.scheduleAtFixedRate(
+        executor.scheduleAtFixedRate(
             {
                 activity?.runOnUiThread {
+                    if (_fragmentGalleryBinding !== binding) return@runOnUiThread
                     val videoElapsedTimeMs =
                         SystemClock.uptimeMillis() - videoStartTimeMs
                     val resultIndex =
@@ -759,7 +893,7 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
                     if (resultIndex >= result.results.size || fragmentGalleryBinding.videoView.visibility == View.GONE) {
                         // The video playback has finished so we stop drawing bounding boxes
-                        backgroundExecutor.shutdown()
+                        executor.shutdown()
                     } else {
                         fragmentGalleryBinding.overlay.setResults(
                             result.results[resultIndex],
@@ -787,6 +921,7 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         capturedAngles: com.google.mediapipe.examples.poselandmarker.PoseAngles? = null
     ) {
         val angles = capturedAngles ?: PoseAngleCalculator.calculate(result)
+        clearOwasObservation()
         if (angles != null) {
             rulaSession = when (pendingRulaView) {
                 RulaView.FRONTAL -> rulaSession.copy(frontal = angles)
@@ -839,6 +974,7 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private fun clearPendingViewResult() {
+        clearOwasObservation()
         if (pendingRulaView == RulaView.FRONTAL) {
             frontalSnapshot = null
             rulaSession = rulaSession.copy(frontal = null)
@@ -854,6 +990,11 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         fragmentGalleryBinding.overlay.clear()
     }
 
+    private fun clearOwasObservation() {
+        owasObservation = null
+        fragmentGalleryBinding.bottomSheetLayout.owasResultLabel.text = "Sua classificação aparecerá aqui."
+    }
+
     private fun ergonomicInputs() = ErgonomicInputs(
         repeatedOrStatic = fragmentGalleryBinding.bottomSheetLayout.repeatedStaticInput.isChecked,
         legsUnsupported = fragmentGalleryBinding.bottomSheetLayout.legsUnsupportedInput.isChecked,
@@ -866,6 +1007,8 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private fun refreshErgonomicLabel() {
         val sheet = fragmentGalleryBinding.bottomSheetLayout
         val angles = latestAngles
+        sheet.saveAssessmentButton.isEnabled = angles != null && !imageProcessing && !savingAssessment && validLoad()
+        sheet.loadKgInput.error = if (validLoad()) null else getString(R.string.assessment_invalid_load)
         sheet.resultsSummary.visibility = if (angles == null) View.GONE else View.VISIBLE
         sheet.detailsButton.visibility = if (angles == null) View.GONE else View.VISIBLE
         sheet.ergonomicResultLabel.visibility =
@@ -909,6 +1052,11 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private fun setUiEnabled(enabled: Boolean) {
+        imageProcessing = !enabled
+        fragmentGalleryBinding.toggleCameraButton.isEnabled = enabled
+        fragmentGalleryBinding.captureButton.isEnabled = enabled && cameraActive
+        fragmentGalleryBinding.bottomSheetLayout.saveAssessmentButton.isEnabled =
+            enabled && latestAngles != null && !savingAssessment && validLoad()
         fragmentGalleryBinding.selectFrontalButton.isEnabled = enabled
         fragmentGalleryBinding.selectLateralButton.isEnabled = enabled
         fragmentGalleryBinding.addOrReplacePhotoButton.isEnabled = enabled
@@ -929,7 +1077,9 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     private fun classifyingError() {
+        val binding = _fragmentGalleryBinding ?: return
         activity?.runOnUiThread {
+            if (_fragmentGalleryBinding !== binding) return@runOnUiThread
             fragmentGalleryBinding.progress.visibility = View.GONE
             setUiEnabled(true)
             updateDisplayView(MediaType.UNKNOWN)
@@ -937,8 +1087,10 @@ class GalleryFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     }
 
     override fun onError(error: String, errorCode: Int) {
+        val binding = _fragmentGalleryBinding ?: return
         classifyingError()
         activity?.runOnUiThread {
+            if (_fragmentGalleryBinding !== binding) return@runOnUiThread
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             if (errorCode == PoseLandmarkerHelper.GPU_ERROR) {
                 fragmentGalleryBinding.bottomSheetLayout.spinnerDelegate.setSelection(
